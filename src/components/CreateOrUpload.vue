@@ -8,7 +8,7 @@
       </label>
     </div>
 
-    <button class="btn btn-light" @click="onNew">Or click here to create<br>a new one instead.</button>
+    <button class="btn btn-light" @click="onNew">Click here to create<br>a new one instead.</button>
   </div>
 </template>
 

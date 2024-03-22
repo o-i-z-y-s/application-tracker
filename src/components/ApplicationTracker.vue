@@ -1,37 +1,39 @@
 <template>
   <div>
-    <table class="table table-hover">
-      <thead class="table-light">
-        <tr>
-          <th scope="col"></th>
-          <th scope="col">#</th>
-          <th scope="col">🏢</th>
-          <th scope="col">Title</th>
-          <th scope="col">💰 Est.</th>
-          <th scope="col">Apply 📅</th>
-          <th scope="col">📅 Last Comm</th>
-          <th scope="col">Step</th>
-          <th scope="col">📝</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="application, index in applications" :key="index" :class="getStepStyle(application.step)">
-          <th scope="row"><img class="table-icon" :class="{ 'invert': application.step === 'Closed' }" src="../assets/square-minus-regular.svg" @click="removeRow(index)"></th>
-          <td>{{ Number(index) + 1 }}</td>
-          <td><table-cell :val="application.company" uid="company" :index="index" @update="update" /></td>
-          <td><table-cell :val="application.title" uid="title" :index="index" @update="update" /></td>
-          <td><table-cell :val="application.payScale" uid="payScale" :index="index" @update="update" /></td>
-          <td><table-cell :val="application.dateApplied" uid="dateApplied" :index="index" @update="update" /></td>
-          <td><table-cell :val="application.mostRecentContactDate" uid="mostRecentContactDate" :index="index" @update="update" /></td>
-          <td><table-cell :val="application.step" uid="step" :index="index" @update="update" /></td>
-          <td><table-cell :val="application.notes" uid="notes" :index="index" @update="update" /></td>
-        </tr>
-        <tr class="table-light">
-          <td style="cursor: pointer;" @click="addRow"><img class="table-icon" src="../assets/square-plus-regular.svg"></td>
-          <td v-for="i in Array(8)" :key="i"></td>
-        </tr>
-      </tbody>
-    </table>
+    <div style="max-width: 100vw; overflow: scroll;">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">#</th>
+            <th scope="col">🏢</th>
+            <th scope="col">Title</th>
+            <th scope="col">💰 Est.</th>
+            <th scope="col">Apply 📅</th>
+            <th scope="col">📅 Last Comm</th>
+            <th scope="col">Step</th>
+            <th scope="col">📝</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="application, index in applications" :key="index" :class="getStepStyle(application.step)">
+            <th scope="row"><img class="table-icon" :class="{ 'invert': application.step === 'Closed' }" src="../assets/square-minus-regular.svg" @click="removeRow(index)"></th>
+            <td>{{ Number(index) + 1 }}</td>
+            <td><table-cell :val="application.company" uid="company" :index="index" @update="update" /></td>
+            <td><table-cell :val="application.title" uid="title" :index="index" @update="update" /></td>
+            <td><table-cell :val="application.payScale" uid="payScale" :index="index" @update="update" /></td>
+            <td><table-cell :val="application.dateApplied" uid="dateApplied" :index="index" @update="update" /></td>
+            <td><table-cell :val="application.mostRecentContactDate" uid="mostRecentContactDate" :index="index" @update="update" /></td>
+            <td><table-cell :val="application.step" uid="step" :index="index" @update="update" /></td>
+            <td><table-cell :val="application.notes" uid="notes" :index="index" @update="update" /></td>
+          </tr>
+          <tr class="table-light">
+            <td style="cursor: pointer;" @click="addRow"><img class="table-icon" src="../assets/square-plus-regular.svg"></td>
+            <td v-for="i in Array(8)" :key="i"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <em>Click a cell to edit.</em>
     <br>
     <div v-if="mobile" class="portrait-message">

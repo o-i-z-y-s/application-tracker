@@ -49,9 +49,8 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
-  min-height: 100vh;
+  min-height: 95vh;
   min-width: 95vw;
-  overflow-x: hidden;
 }
 .table-min-width {
   min-width: 525px;
@@ -77,11 +76,5 @@ h1 {
 }
 .footer > a:hover {
   letter-spacing: 1px;
-}
-
-@media screen and (max-width: 525px) {
-  #app {
-    overflow-x: scroll;
-  }
 }
 </style>
