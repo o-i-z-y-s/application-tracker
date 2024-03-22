@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="max-width: 100vw; overflow: scroll;">
+    <div class="scrollbars">
       <table class="table table-hover">
         <thead class="table-light">
           <tr>
@@ -10,14 +10,14 @@
             <th scope="col">Title</th>
             <th scope="col">💰 Est.</th>
             <th scope="col">Apply 📅</th>
-            <th scope="col">📅 Last Comm</th>
+            <th scope="col">📅 Last Comm.</th>
             <th scope="col">Step</th>
             <th scope="col">📝</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="application, index in applications" :key="index" :class="getStepStyle(application.step)">
-            <th scope="row"><img class="table-icon" :class="{ 'invert': application.step === 'Closed' }" src="../assets/square-minus-regular.svg" @click="removeRow(index)"></th>
+            <td><img class="table-icon" :class="{ 'invert': application.step === 'Closed' }" src="../assets/square-minus-regular.svg" @click="removeRow(index)"></td>
             <td>{{ Number(index) + 1 }}</td>
             <td><table-cell :val="application.company" uid="company" :index="index" @update="update" /></td>
             <td><table-cell :val="application.title" uid="title" :index="index" @update="update" /></td>
@@ -144,13 +144,27 @@ export default {
 button {
   margin-bottom: 1rem;
 }
+.scrollbars {
+  max-width: 100vw;
+  overflow: hidden;
+}
 .portrait-message {
   display: none;
+}
+td, th {
+  text-align: center;
+  vertical-align: middle;
 }
 
 @media screen and (orientation: portrait) {
   .portrait-message {
     display: block;
+  }
+}
+
+@media screen and (max-width: 429px) {
+  .scrollbars {
+    overflow: scroll;
   }
 }
 </style>
