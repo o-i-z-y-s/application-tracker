@@ -34,6 +34,9 @@
     </table>
     <em>Click a cell to edit.</em>
     <br>
+    <div v-if="mobile" class="portrait-message">
+      (Psst. The table fits better in landscape. <img class="table-icon" src="../assets/arrows-rotate-solid.svg">)
+    </div>
     <button class="btn btn-light" style="margin-top: 1rem;" @click="download">Download as CSV</button>
     <a style="visibility: hidden;" href="/Application Tracker" download></a>
   </div>
@@ -56,10 +59,12 @@ export default {
     return {
       applications: {},
       fields: ['company','title','payScale','dateApplied','mostRecentContactDate','step','notes'],
+      mobile: false,
     }
   },
   mounted: function() {
     this.applications = this.applicationsOrig;
+    this.checkDevice();
   },
   methods: {
     update(newVal, index, uid) {
@@ -115,6 +120,12 @@ export default {
         case 'Closed': return 'table-dark';
       }
     },
+
+    checkDevice() {
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        this.mobile = true;
+      } else { this.mobile = false; }
+    },
   }
 }
 </script>
@@ -130,5 +141,14 @@ export default {
 }
 button {
   margin-bottom: 1rem;
+}
+.portrait-message {
+  display: none;
+}
+
+@media screen and (orientation: portrait) {
+  .portrait-message {
+    display: block;
+  }
 }
 </style>

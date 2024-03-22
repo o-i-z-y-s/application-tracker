@@ -50,11 +50,11 @@ export default {
   align-items: center;
   text-align: center;
   min-height: 100vh;
-  min-width: 100vw;
+  min-width: 95vw;
   overflow-x: hidden;
 }
 .table-min-width {
-  min-width: 527px;
+  min-width: 525px;
 }
 h1 {
   margin-bottom: 3vh;
@@ -81,7 +81,6 @@ h1 {
 
 @media screen and (max-width: 525px) {
   #app {
-    min-width: 525px;
     overflow-x: scroll;
   }
 }
