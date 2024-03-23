@@ -49,24 +49,24 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
-  min-height: 95vh;
-  min-width: 95vw;
+  min-height: 95dvh;
+  min-width: 95dvw;
 }
 .table-min-width {
   min-width: 525px;
 }
 h1 {
-  margin-bottom: 3vh;
+  margin-bottom: 3dvh;
 }
 .content {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 95vh;
+  min-height: 95dvh;
 }
 .footer {
   font-size: 0.8rem;
-  min-height: 1vh;
+  min-height: 1dvh;
   font-style: italic;
 }
 .footer > a {

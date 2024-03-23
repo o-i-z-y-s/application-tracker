@@ -1,23 +1,23 @@
 <template>
   <div>
     <div class="scrollbars">
-      <table class="table table-hover">
-        <thead class="table-light">
+      <table class="table table-dark table-hover">
+        <thead class="">
           <tr>
             <th scope="col"></th>
             <th scope="col">#</th>
             <th scope="col">🏢</th>
             <th scope="col">Title</th>
             <th scope="col">💰 Est.</th>
-            <th scope="col">Apply 📅</th>
-            <th scope="col">📅 Last Comm.</th>
+            <th scope="col">Apply Date</th>
+            <th scope="col">Last Comm.</th>
             <th scope="col">Step</th>
             <th scope="col">📝</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="application, index in applications" :key="index" :class="getStepStyle(application.step)">
-            <td><img class="table-icon" :class="{ 'invert': application.step === 'Closed' }" src="../assets/square-minus-regular.svg" @click="removeRow(index)"></td>
+            <td><img class="table-icon" :class="{ 'filter': application.step !== 'Closed' }" src="../assets/square-minus-whitesmoke.svg" @click="removeRow(index)"></td>
             <td>{{ Number(index) + 1 }}</td>
             <td><table-cell :val="application.company" uid="company" :index="index" @update="update" /></td>
             <td><table-cell :val="application.title" uid="title" :index="index" @update="update" /></td>
@@ -27,8 +27,8 @@
             <td><table-cell :val="application.step" uid="step" :index="index" @update="update" /></td>
             <td><table-cell :val="application.notes" uid="notes" :index="index" @update="update" /></td>
           </tr>
-          <tr class="table-light">
-            <td style="cursor: pointer;" @click="addRow"><img class="table-icon" src="../assets/square-plus-regular.svg"></td>
+          <tr class="">
+            <td style="cursor: pointer;" @click="addRow"><img class="table-icon" src="../assets/square-plus-whitesmoke.svg"></td>
             <td v-for="i in Array(8)" :key="i"></td>
           </tr>
         </tbody>
@@ -40,12 +40,12 @@
       (Psst. The table fits better in landscape. <img class="table-icon" src="../assets/arrows-rotate-solid.svg">)
     </div>
     <div class="btn-row">
-      <button class="btn btn-light" style="margin-top: 1rem;" @click="download">Download as CSV</button>
-      <button class="btn btn-light" style="margin-top: 1rem;" @click="save" :disabled="cookiesDisabled">Save to Cookies</button>
+      <button class="btn btn-dark" style="margin-top: 1rem;" @click="download">Download as CSV</button>
+      <button class="btn btn-dark" style="margin-top: 1rem;" @click="save" :disabled="cookiesDisabled">Save to Cookies</button>
     </div>
-    <div v-if="cookiesDisabled">
-      Your mobile browser has cookies disabled, so no saving for now.<br>
-      On Safari, this is probably due to "Prevent Cross-Site Tracking" in your settings.
+    <div v-if="cookiesDisabled" style="font-size: 0.9rem;">
+      Your browser has cookies disabled, so you'll have to download to save.<br>
+      On Safari, this is probably due to "Prevent Cross-Site Tracking" in your settings (if it wasn't intentional).
     </div>
     <p v-if="saveClicked" :style="{ 'color': (message === 'Saved successfully.' ? 'greenyellow' : 'red') }">{{ message }}</p>
     <a style="visibility: hidden;" href="/Application Tracker" download></a>
@@ -78,6 +78,7 @@ export default {
   mounted: function() {
     this.applications = this.applicationsOrig;
     this.checkDevice();
+    this.areCookiesEnabled();
   },
   methods: {
     update(newVal, index, uid) {
@@ -152,10 +153,10 @@ export default {
 
     getStepStyle(step) {
       switch (step) {
-        case 'Applied': return;
-        case 'Phone Screen': return 'table-light';
-        case 'Assessment': return 'table-info';
-        case 'Onsite': return 'table-primary';
+        case 'Applied': return 'table-light';
+        case 'Phone Screen': return 'table-info';
+        case 'Assessment': return 'table-primary';
+        case 'Onsite': return 'table-secondary';
         case 'Accepted': return 'table-success';
         case 'Rejected': return 'table-danger';
         case 'Closed': return 'table-dark';
@@ -165,23 +166,25 @@ export default {
     checkDevice() {
       if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         this.mobile = true;
-        document.cookie = "test=test;";
-
-        try {
-          const cookieValue = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("test="))
-            ?.split("=")[1];
-          
-          if (cookieValue !== 'test') {
-            throw new Error('cookies disabled');
-          }
-        }
-        catch {
-          this.cookiesDisabled = true;
-        }
       } else { this.mobile = false; }
     },
+
+    areCookiesEnabled() {
+      document.cookie = "test=test;SameSite=None";
+      try {
+        const cookieValue = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("test="))
+          ?.split("=")[1];
+        
+        if (cookieValue !== 'test') {
+          throw new Error('cookies disabled');
+        }
+      }
+      catch {
+        this.cookiesDisabled = true;
+      }
+    }
   }
 }
 </script>
@@ -192,19 +195,24 @@ export default {
   width: 1.5em;
   cursor: pointer;
 }
-.invert {
+.filter {
   filter: invert(1);
 }
-button {
+
+.btn {
+  color: whitesmoke;
+  border: 1px solid whitesmoke;
+  border-radius: 0.25rem;
   margin: 0 1rem 1rem 1rem;
 }
+
 .btn-row {
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 .scrollbars {
-  max-width: 100vw;
+  max-width: 100dvw;
   overflow: hidden;
 }
 .portrait-message {

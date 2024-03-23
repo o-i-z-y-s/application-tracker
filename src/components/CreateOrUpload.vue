@@ -4,13 +4,14 @@
       <input ref="uploader" id="uploader" class="file-input" type="file" @change="onChange" accept=".csv">
       <label for="uploader" class="drop-space">
         <div v-if="hovering">Drop file here.</div>
-        <div v-else><h3>Drag and drop your file<br>or click in here to upload it manually.</h3></div>
+        <div v-else><h4>Drag and drop your file or click in here to upload it manually.</h4></div>
       </label>
     </div>
 
-    <button v-if="show" class="btn btn-light loader" @click="load">You have a saved tracker.<br>Click here to load it.</button>
-    <br v-if="show">
-    <button class="btn btn-light" @click="onNew">Or click here to create<br>a new one instead.</button>
+    <div class="btn-row">
+      <button v-if="show" class="col btn btn-dark loader" @click="load">You have a saved tracker.<br>Click here to load it.</button>
+      <button class="col btn btn-dark" style="margin-bottom: 1rem;" @click="onNew">Or click here to create<br>a new one instead.</button>
+    </div>
   </div>
 </template>
 
@@ -131,10 +132,13 @@ export default {
 
 <style scoped>
 .file-uploader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 2rem;
   border: 4px dashed whitesmoke;
   border-radius: 2rem;
-  margin-bottom: 3vh;
+  margin-bottom: 3dvh;
 }
 .file-input {
   opacity: 0;
@@ -144,14 +148,31 @@ export default {
   position: absolute;
 }
 .drop-space {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40vw;
-  padding: 4vh 3vw;
+  width: 20rem;
+  padding: 1dvh 2dvw;
   cursor: pointer;
 }
+.btn {
+  color: whitesmoke;
+  border: 2px solid whitesmoke;
+  border-radius: 0.25rem;
+}
+.btn-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
 .loader {
+  margin-right: 1rem;
   margin-bottom: 1rem;
+}
+
+@media screen and (max-width: 400px) {
+  .drop-space {
+    width: 70dvw;
+  }
+  .loader {
+    /* margin-right: 0rem; */
+  }
 }
 </style>
