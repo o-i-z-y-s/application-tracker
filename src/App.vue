@@ -1,7 +1,7 @@
 <template>
   <div id="app" :class="{ 'table-min-width': loaded }">
     <div class="content">
-      <h1>Application Tracker</h1>
+      <h1>Job Application Tracker</h1>
       <div v-if="!loaded">
         <create-or-upload @created="onCreate" />
       </div>
