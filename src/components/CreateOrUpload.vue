@@ -106,6 +106,12 @@ export default {
       this.parseFile(true);
     },
 
+    checkStorage() {
+      if (window.localStorage.getItem('content')) {
+        this.show = true;
+      }
+    },
+
     // loadFromCookies() {
     //   const cookieValue = document.cookie
     //       .split("; ")
@@ -114,12 +120,6 @@ export default {
       
     //   this.file = JSON.parse(cookieValue);
     //   this.parseFile(true);
-    // },
-
-    // checkStorage() {
-    //   if (window.localStorage.getItem('content')) {
-    //     this.show = true;
-    //   }
     // },
 
     // checkCookies() {
