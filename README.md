@@ -1,4 +1,4 @@
-# application-tracker
+# job-application-tracker
 
 ## What is this?
 A small tool I made for tracking job applications. Managing a spreadsheet is tiring and most existing tools for this are bloated and require an account.
