@@ -41,7 +41,11 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-light" style="margin-top: 1rem;" @click="download">Download as CSV</button>
-      <button class="btn btn-light" style="margin-top: 1rem;" @click="save">Save to Cookies</button>
+      <button class="btn btn-light" style="margin-top: 1rem;" @click="save" :disabled="cookiesDisabled">Save to Cookies</button>
+    </div>
+    <div v-if="cookiesDisabled">
+      Your mobile browser has cookies disabled, so no saving for now.<br>
+      On Safari, this is probably due to "Prevent Cross-Site Tracking" in your settings.
     </div>
     <p v-if="saveClicked" :style="{ 'color': (message === 'Saved successfully.' ? 'greenyellow' : 'red') }">{{ message }}</p>
     <a style="visibility: hidden;" href="/Application Tracker" download></a>
@@ -67,7 +71,8 @@ export default {
       fields: ['company','title','payScale','dateApplied','mostRecentContactDate','step','notes'],
       mobile: false,
       message: '',
-      saveClicked: false
+      saveClicked: false,
+      cookiesDisabled: false
     }
   },
   mounted: function() {
@@ -121,8 +126,15 @@ export default {
       let expDate = new Date;
       expDate.setFullYear(expDate.getFullYear() + 10);
       try {
-        document.cookie = JSON.stringify(content) + '; expires=' + expDate.toUTCString() +';';
-        this.message = 'Saved successfully.';
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+          document.cookie = cookies[i] + "=; expires="+ new Date(0).toUTCString();
+        }
+        
+        this.$nextTick(() => {
+          document.cookie = 'content=' + JSON.stringify(content) + '; expires=' + expDate.toUTCString() +';';
+          this.message = 'Saved successfully.';
+        });
       }
       catch {
         this.message = 'Failed to save.';
@@ -153,6 +165,21 @@ export default {
     checkDevice() {
       if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         this.mobile = true;
+        document.cookie = "test=test;";
+
+        try {
+          const cookieValue = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("test="))
+            ?.split("=")[1];
+          
+          if (cookieValue !== 'test') {
+            throw new Error('cookies disabled');
+          }
+        }
+        catch {
+          this.cookiesDisabled = true;
+        }
       } else { this.mobile = false; }
     },
   }

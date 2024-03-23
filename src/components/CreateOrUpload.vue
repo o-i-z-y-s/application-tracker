@@ -28,9 +28,7 @@ export default {
     }
   },
   mounted: function() {
-    if (document.cookie) {
-      this.show = true;
-    }
+    this.checkForSavedTracker();
   },
   methods: {
     onChange(e) {
@@ -103,10 +101,30 @@ export default {
     },
 
     load() {
-      let cookie = document.cookie;
-      this.file = JSON.parse(cookie);
+      const cookieValue = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("content="))
+          ?.split("=",2)[1];
+      
+      this.file = JSON.parse(cookieValue);
       this.parseFile(true);
     },
+
+    checkForSavedTracker() {
+      try {
+        const cookieValue = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("content="))
+          ?.split("=",2)[1];
+
+        if (cookieValue) {
+          this.show = true;
+        }
+      }
+      catch {
+        return;
+      }
+    }
   }
 }
 </script>
