@@ -9,7 +9,7 @@
         <application-tracker :applicationsOrig="applications" />
       </div>
     </div>
-    <p class="footer">Made in an evening by <a href="https://github.com/o-i-z-y-s">this dweeb.</a></p>
+    <p class="footer">Made by <a href="https://github.com/o-i-z-y-s">this dweeb.</a></p>
   </div>
 </template>
 

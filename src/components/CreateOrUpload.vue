@@ -29,7 +29,7 @@ export default {
     }
   },
   mounted: function() {
-    this.checkForSavedTracker();
+    this.checkStorage();
   },
   methods: {
     onChange(e) {
@@ -102,30 +102,41 @@ export default {
     },
 
     load() {
-      const cookieValue = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("content="))
-          ?.split("=",2)[1];
-      
-      this.file = JSON.parse(cookieValue);
+      this.file = JSON.parse(window.localStorage.getItem('content'));
       this.parseFile(true);
     },
 
-    checkForSavedTracker() {
-      try {
-        const cookieValue = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("content="))
-          ?.split("=",2)[1];
+    // loadFromCookies() {
+    //   const cookieValue = document.cookie
+    //       .split("; ")
+    //       .find((row) => row.startsWith("content="))
+    //       ?.split("=",2)[1];
+      
+    //   this.file = JSON.parse(cookieValue);
+    //   this.parseFile(true);
+    // },
 
-        if (cookieValue) {
-          this.show = true;
-        }
-      }
-      catch {
-        return;
-      }
-    }
+    // checkStorage() {
+    //   if (window.localStorage.getItem('content')) {
+    //     this.show = true;
+    //   }
+    // },
+
+    // checkCookies() {
+    //   try {
+    //     const cookieValue = document.cookie
+    //       .split("; ")
+    //       .find((row) => row.startsWith("content="))
+    //       ?.split("=",2)[1];
+
+    //     if (cookieValue) {
+    //       this.show = true;
+    //     }
+    //   }
+    //   catch {
+    //     return;
+    //   }
+    // },
   }
 }
 </script>
@@ -155,7 +166,7 @@ export default {
 .btn {
   color: whitesmoke;
   border: 2px solid whitesmoke;
-  border-radius: 0.25rem;
+  border-radius: 1rem;
 }
 .btn-row {
   display: flex;

@@ -8,4 +8,4 @@ A small tool I made for tracking job applications. Managing a spreadsheet is tir
 2. Make your changes!
 3. Save your tracker in-browser or download it as a CSV!
 
-Load from your cookies or upload your CSV to pick up where you left off. Make sure to save/download again if you've edited it.
+Load from your browser's localStorage or upload your CSV to pick up where you left off. Make sure to save/download again if you've edited it.

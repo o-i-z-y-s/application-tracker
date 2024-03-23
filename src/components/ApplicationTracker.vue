@@ -6,18 +6,18 @@
           <tr>
             <th scope="col"></th>
             <th scope="col">#</th>
-            <th scope="col">🏢</th>
+            <th scope="col">Company</th>
             <th scope="col">Title</th>
             <th scope="col">💰 Est.</th>
             <th scope="col">Apply Date</th>
-            <th scope="col">Last Comm.</th>
+            <th scope="col">Last Contact</th>
             <th scope="col">Step</th>
             <th scope="col">📝</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="application, index in applications" :key="index" :class="getStepStyle(application.step)">
-            <td><img class="table-icon" :class="{ 'filter': application.step !== 'Closed' }" src="../assets/square-minus-whitesmoke.svg" @click="removeRow(index)"></td>
+            <td><img class="table-icon" :class="{ 'filter': doFilter(application.step) }" src="../assets/square-minus-whitesmoke.svg" @click="removeRow(index)"></td>
             <td>{{ Number(index) + 1 }}</td>
             <td><table-cell :val="application.company" uid="company" :index="index" @update="update" /></td>
             <td><table-cell :val="application.title" uid="title" :index="index" @update="update" /></td>
@@ -41,11 +41,10 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-dark" style="margin-top: 1rem;" @click="download">Download as CSV</button>
-      <button class="btn btn-dark" style="margin-top: 1rem;" @click="save" :disabled="cookiesDisabled">Save to Cookies</button>
+      <button class="btn btn-dark" style="margin-top: 1rem;" @click="save" :disabled="storageDisabled">Save to Browser Storage</button>
     </div>
-    <div v-if="cookiesDisabled" style="font-size: 0.9rem;">
-      Your browser has cookies disabled, so you'll have to download to save.<br>
-      On Safari, this is probably due to "Prevent Cross-Site Tracking" in your settings (if it wasn't intentional).
+    <div v-if="storageDisabled" style="font-size: 0.9rem;">
+      You (might) have local storage disabled in your browser settings, so you'll need to download to save.<br>
     </div>
     <p v-if="saveClicked" :style="{ 'color': (message === 'Saved successfully.' ? 'greenyellow' : 'red') }">{{ message }}</p>
     <a style="visibility: hidden;" href="/Job Application Tracker" download></a>
@@ -72,13 +71,14 @@ export default {
       mobile: false,
       message: '',
       saveClicked: false,
-      cookiesDisabled: false
+      // cookiesDisabled: false,
+      storageDisabled: false
     }
   },
   mounted: function() {
     this.applications = this.applicationsOrig;
     this.checkDevice();
-    this.areCookiesEnabled();
+    this.isStorageEnabled();
   },
   methods: {
     update(newVal, index, uid) {
@@ -123,25 +123,37 @@ export default {
 
     save() {
       let content = this.buildTracker();
-
-      let expDate = new Date;
-      expDate.setFullYear(expDate.getFullYear() + 10);
       try {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-          document.cookie = cookies[i] + "=; expires="+ new Date(0).toUTCString();
-        }
-        
-        this.$nextTick(() => {
-          document.cookie = 'content=' + JSON.stringify(content) + '; expires=' + expDate.toUTCString() +';';
-          this.message = 'Saved successfully.';
-        });
+        window.localStorage.setItem('content', JSON.stringify(content));
+        this.message = 'Saved successfully.';
       }
       catch {
-        this.message = 'Failed to save.';
+        this.message = 'Failed to save. Check your browser storage settings.';
       }
       this.saveClicked = true;
     },
+
+    // saveToCookies() {
+    //   let expDate = new Date;
+    //   expDate.setFullYear(expDate.getFullYear() + 10);
+    //   let content = this.buildTracker();
+
+    //   try {
+    //     var cookies = document.cookie.split(';');
+    //     for (var i = 0; i < cookies.length; i++) {
+    //       document.cookie = cookies[i] + "=; expires="+ new Date(0).toUTCString();
+    //     }
+        
+    //     this.$nextTick(() => {
+    //       document.cookie = 'content=' + JSON.stringify(content) + '; expires=' + expDate.toUTCString() +';';
+    //       this.message = 'Saved successfully.';
+    //     });
+    //   }
+    //   catch {
+    //     this.message = 'Failed to save. Check your browser cookie settings.';
+    //   }
+    //   this.saveClicked = true;
+    // },
 
     getFileName() {
       let now = new Date();
@@ -163,28 +175,42 @@ export default {
       }
     },
 
+    doFilter(step) {
+      return step !== 'Closed' && step !== '';
+    },
+
     checkDevice() {
       if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         this.mobile = true;
       } else { this.mobile = false; }
     },
 
-    areCookiesEnabled() {
-      document.cookie = "test=test;SameSite=None";
-      try {
-        const cookieValue = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("test="))
-          ?.split("=")[1];
+    // areCookiesEnabled() {
+    //   document.cookie = "test=test;SameSite=None";
+    //   try {
+    //     const cookieValue = document.cookie
+    //       .split("; ")
+    //       .find((row) => row.startsWith("test="))
+    //       ?.split("=")[1];
         
-        if (cookieValue !== 'test') {
-          throw new Error('cookies disabled');
-        }
+    //     if (cookieValue !== 'test') {
+    //       throw new Error('cookies disabled');
+    //     }
+    //   }
+    //   catch {
+    //     this.cookiesDisabled = true;
+    //   }
+    // },
+
+    isStorageEnabled() {
+      window.localStorage.setItem('test', 'test');
+      try {
+        window.localStorage.getItem('test');
       }
       catch {
-        this.cookiesDisabled = true;
+        this.storageDisabled = true;
       }
-    }
+    },
   }
 }
 </script>
