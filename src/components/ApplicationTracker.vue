@@ -39,7 +39,11 @@
     <div v-if="mobile" class="portrait-message">
       (Psst. The table fits better in landscape. <img class="table-icon" src="../assets/arrows-rotate-solid.svg">)
     </div>
-    <button class="btn btn-light" style="margin-top: 1rem;" @click="download">Download as CSV</button>
+    <div class="btn-row">
+      <button class="btn btn-light" style="margin-top: 1rem;" @click="download">Download as CSV</button>
+      <button class="btn btn-light" style="margin-top: 1rem;" @click="save">Save to Cookies</button>
+    </div>
+    <p v-if="saveClicked" :style="{ 'color': (message === 'Saved successfully.' ? 'greenyellow' : 'red') }">{{ message }}</p>
     <a style="visibility: hidden;" href="/Application Tracker" download></a>
   </div>
 </template>
@@ -62,6 +66,8 @@ export default {
       applications: {},
       fields: ['company','title','payScale','dateApplied','mostRecentContactDate','step','notes'],
       mobile: false,
+      message: '',
+      saveClicked: false
     }
   },
   mounted: function() {
@@ -81,7 +87,7 @@ export default {
       this.applications.splice(index, 1);
     },
 
-    download() {
+    buildTracker() {
       // forgive me for this sin
       let content = [];
       for (let i = 0; i < this.applications.length; i++) {
@@ -93,6 +99,12 @@ export default {
         content.push(application);
       }
 
+      return content;
+    },
+
+    download() {
+      let content = this.buildTracker();
+
       let csvContent = content.map(e => e.join(",")).join("\n");
       let csvData = new Blob([csvContent], {type: 'data:text/csv;charset=utf-8,'});
       let link = document.createElement('a');
@@ -101,6 +113,21 @@ export default {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    },
+
+    save() {
+      let content = this.buildTracker();
+
+      let expDate = new Date;
+      expDate.setFullYear(expDate.getFullYear() + 10);
+      try {
+        document.cookie = JSON.stringify(content) + '; expires=' + expDate.toUTCString() +';';
+        this.message = 'Saved successfully.';
+      }
+      catch {
+        this.message = 'Failed to save.';
+      }
+      this.saveClicked = true;
     },
 
     getFileName() {
@@ -142,7 +169,12 @@ export default {
   filter: invert(1);
 }
 button {
-  margin-bottom: 1rem;
+  margin: 0 1rem 1rem 1rem;
+}
+.btn-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 .scrollbars {
   max-width: 100vw;

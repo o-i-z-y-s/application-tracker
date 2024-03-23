@@ -8,7 +8,9 @@
       </label>
     </div>
 
-    <button class="btn btn-light" @click="onNew">Click here to create<br>a new one instead.</button>
+    <button v-if="show" class="btn btn-light loader" @click="load">You have a saved tracker.<br>Click here to load it.</button>
+    <br v-if="show">
+    <button class="btn btn-light" @click="onNew">Or click here to create<br>a new one instead.</button>
   </div>
 </template>
 
@@ -21,7 +23,13 @@ export default {
   data: function() {
     return {
       file: '',
-      hovering: false
+      hovering: false,
+      show: false
+    }
+  },
+  mounted: function() {
+    if (document.cookie) {
+      this.show = true;
     }
   },
   methods: {
@@ -30,12 +38,17 @@ export default {
       this.parseFile();
     },
 
-    async parseFile() {
+    async parseFile(loaded = false) {
       if (this.file === '') {
         return;
       }
 
-      let content = await this.parser();
+      let content = [];
+      if (!loaded) {
+        content = await this.parser();
+      } else {
+        content = this.file;
+      }
 
       let applications = [];
       for (let i = 0; i < content.length; i++) {
@@ -53,7 +66,9 @@ export default {
         applications[i] = application;
       }
 
-      if (applications.length > 0) { this.$emit('created', applications); }
+      if (applications.length > 0) { 
+        this.$emit('created', applications);
+      }
     },
 
     async parser() {
@@ -85,7 +100,13 @@ export default {
       this.file = e.dataTransfer.files[0];
       this.parseFile();
       this.hovering = false;
-    }
+    },
+
+    load() {
+      let cookie = document.cookie;
+      this.file = JSON.parse(cookie);
+      this.parseFile(true);
+    },
   }
 }
 </script>
@@ -111,5 +132,8 @@ export default {
   width: 40vw;
   padding: 4vh 3vw;
   cursor: pointer;
+}
+.loader {
+  margin-bottom: 1rem;
 }
 </style>
