@@ -48,7 +48,7 @@
       On Safari, this is probably due to "Prevent Cross-Site Tracking" in your settings (if it wasn't intentional).
     </div>
     <p v-if="saveClicked" :style="{ 'color': (message === 'Saved successfully.' ? 'greenyellow' : 'red') }">{{ message }}</p>
-    <a style="visibility: hidden;" href="/Application Tracker" download></a>
+    <a style="visibility: hidden;" href="/Job Application Tracker" download></a>
   </div>
 </template>
 
@@ -147,7 +147,7 @@ export default {
       let now = new Date();
       let month = now.getMonth() + 1;
       let seconds = (now.getSeconds() === '0' ? '12': now.getSeconds());
-      return 'Application Tracker ' + now.getFullYear() + '-' + month + '-' + now.getDate()
+      return 'Job Application Tracker ' + now.getFullYear() + '-' + month + '-' + now.getDate()
           + ' ' + now.getHours() + '-' + now.getMinutes() + '-' + seconds + '.csv';
     },
 
