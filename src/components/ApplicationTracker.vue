@@ -12,7 +12,7 @@
             <th scope="col" @click="sort('dateApplied')">Apply Date</th>
             <th scope="col" @click="sort('mostRecentContactDate')">Last Contact</th>
             <th scope="col" @click="sort('step')">Step</th>
-            <th scope="col">📝</th>
+            <th scope="col" @click="sort('notes')">📝</th>
           </tr>
         </thead>
         <tbody>
@@ -247,6 +247,7 @@ export default {
 .icon {
   height: 1.5em;
   width: 1.5em;
+  cursor: default;
 }
 .clickable-icon {
   cursor: pointer;
