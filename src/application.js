@@ -1,5 +1,6 @@
 class Application {
   constructor() {
+    this.id = '';
     this.company = '';
     this.title = '';
     this.payScale = '';
@@ -10,6 +11,7 @@ class Application {
   }
 
   init(obj) {
+    this.id = obj.id;
     this.company = obj.company;
     this.title = obj.title;
     this.payScale = obj.payScale;

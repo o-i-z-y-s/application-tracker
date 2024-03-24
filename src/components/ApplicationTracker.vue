@@ -4,21 +4,21 @@
       <table class="table table-dark table-hover">
         <thead class="">
           <tr>
-            <th scope="col"></th>
-            <th scope="col">#</th>
-            <th scope="col">Company</th>
-            <th scope="col">Title</th>
-            <th scope="col">💰 Est.</th>
-            <th scope="col">Apply Date</th>
-            <th scope="col">Last Contact</th>
-            <th scope="col">Step</th>
+            <th scope="col"><img class="icon" src="../assets/sort-solid.svg"></th>
+            <th scope="col" @click="sort('id')">#</th>
+            <th scope="col" @click="sort('company')">Company</th>
+            <th scope="col" @click="sort('title')">Title</th>
+            <th scope="col" @click="sort('payScale')">💰 Est.</th>
+            <th scope="col" @click="sort('dateApplied')">Apply Date</th>
+            <th scope="col" @click="sort('mostRecentContactDate')">Last Contact</th>
+            <th scope="col" @click="sort('step')">Step</th>
             <th scope="col">📝</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="application, index in applications" :key="index" :class="getStepStyle(application.step)">
-            <td><img class="table-icon" :class="{ 'filter': doFilter(application.step) }" src="../assets/square-minus-whitesmoke.svg" @click="removeRow(index)"></td>
-            <td>{{ Number(index) + 1 }}</td>
+          <tr v-for="application, index in sorted" :key="index" :class="getStepStyle(application.step)">
+            <td><img class="clickable-icon" :class="{ 'filter': doFilter(application.step) }" src="../assets/square-minus-whitesmoke.svg" @click="removeRow(index)"></td>
+            <td>{{ application.id }}</td>
             <td><table-cell :val="application.company" uid="company" :index="index" @update="update" /></td>
             <td><table-cell :val="application.title" uid="title" :index="index" @update="update" /></td>
             <td><table-cell :val="application.payScale" uid="payScale" :index="index" @update="update" /></td>
@@ -28,7 +28,7 @@
             <td><table-cell :val="application.notes" uid="notes" :index="index" @update="update" /></td>
           </tr>
           <tr class="">
-            <td style="cursor: pointer;" @click="addRow"><img class="table-icon" src="../assets/square-plus-whitesmoke.svg"></td>
+            <td style="cursor: pointer;" @click="addRow"><img class="clickable-icon" src="../assets/square-plus-whitesmoke.svg"></td>
             <td v-for="i in Array(8)" :key="i"></td>
           </tr>
         </tbody>
@@ -37,7 +37,7 @@
     <em>Click a cell to edit.</em>
     <br>
     <div v-if="mobile" class="portrait-message">
-      (Psst. The table fits better in landscape. <img class="table-icon" src="../assets/arrows-rotate-solid.svg">)
+      (Psst. The table fits better in landscape. <img class="icon" src="../assets/arrows-rotate-solid.svg">)
     </div>
     <div class="btn-row">
       <button class="btn btn-dark" style="margin-top: 1rem;" @click="download">Download as CSV</button>
@@ -46,7 +46,9 @@
     <div v-if="storageDisabled" style="font-size: 0.9rem;">
       You (might) have local storage disabled in your browser settings, so you'll need to download to save.<br>
     </div>
-    <p v-if="saveClicked" :style="{ 'color': (message === 'Saved successfully.' ? 'greenyellow' : 'red') }">{{ message }}</p>
+    <div style="height: 1.5rem;">
+      <p ref="saveMessage" class="save-message" :style="{ 'color': (message === 'Saved successfully.' ? 'greenyellow' : 'red') }">{{ message }}</p>
+    </div>
     <a style="visibility: hidden;" href="/Job Application Tracker" download></a>
   </div>
 </template>
@@ -54,6 +56,7 @@
 <script>
 import TableCell from './TableCell.vue';
 import Application from '../application.js';
+const _ = require('lodash');
 
 export default {
   components: { TableCell },
@@ -67,12 +70,22 @@ export default {
   data: function() {
     return {
       applications: {},
-      fields: ['company','title','payScale','dateApplied','mostRecentContactDate','step','notes'],
+      fields: ['id','company','title','payScale','dateApplied','mostRecentContactDate','step','notes'],
       mobile: false,
       message: '',
-      saveClicked: false,
       // cookiesDisabled: false,
-      storageDisabled: false
+      storageDisabled: false,
+      sortKey: 'id',
+      lastSortKey: ''
+    }
+  },
+  computed: {
+    sorted: function(e) {
+      if (this.sortKey === this.lastSortKey) {
+        return _.orderBy(this.applications, [application => application[e.sortKey].toLowerCase()], ['desc']);
+      } else {
+        return _.orderBy(this.applications, [application => application[e.sortKey].toLowerCase()], ['asc']);
+      }
     }
   },
   mounted: function() {
@@ -81,12 +94,22 @@ export default {
     this.isStorageEnabled();
   },
   methods: {
+    sort(val) {
+      if (val === this.sortKey && val === this.lastSortKey) {
+        this.lastSortKey = '!' + this.sortKey;
+      } else { this.lastSortKey = this.sortKey; }
+      this.sortKey = val;
+    },
+
     update(newVal, index, uid) {
       this.applications[index][uid] = newVal;
     },
 
     addRow() {
-      this.applications.push(new Application());
+      this.addingRow = true;
+      let app = new Application();
+      app.id = String(this.applications.length + 1);
+      this.applications.push(app);
     },
     
     removeRow(index) {
@@ -123,6 +146,7 @@ export default {
 
     save() {
       let content = this.buildTracker();
+
       try {
         window.localStorage.setItem('content', JSON.stringify(content));
         this.message = 'Saved successfully.';
@@ -130,30 +154,13 @@ export default {
       catch {
         this.message = 'Failed to save. Check your browser storage settings.';
       }
-      this.saveClicked = true;
+
+      this.$refs.saveMessage.style.display = 'block';
+      this.$refs.saveMessage.classList.value += ' fade-in-fade-out';
+      setTimeout(() => {
+        this.$refs.saveMessage.style.display = 'none';
+      }, 2500);
     },
-
-    // saveToCookies() {
-    //   let expDate = new Date;
-    //   expDate.setFullYear(expDate.getFullYear() + 10);
-    //   let content = this.buildTracker();
-
-    //   try {
-    //     var cookies = document.cookie.split(';');
-    //     for (var i = 0; i < cookies.length; i++) {
-    //       document.cookie = cookies[i] + "=; expires="+ new Date(0).toUTCString();
-    //     }
-        
-    //     this.$nextTick(() => {
-    //       document.cookie = 'content=' + JSON.stringify(content) + '; expires=' + expDate.toUTCString() +';';
-    //       this.message = 'Saved successfully.';
-    //     });
-    //   }
-    //   catch {
-    //     this.message = 'Failed to save. Check your browser cookie settings.';
-    //   }
-    //   this.saveClicked = true;
-    // },
 
     getFileName() {
       let now = new Date();
@@ -185,6 +192,16 @@ export default {
       } else { this.mobile = false; }
     },
 
+    isStorageEnabled() {
+      window.localStorage.setItem('test', 'test');
+      try {
+        window.localStorage.getItem('test');
+      }
+      catch {
+        this.storageDisabled = true;
+      }
+    },
+
     // areCookiesEnabled() {
     //   document.cookie = "test=test;SameSite=None";
     //   try {
@@ -202,23 +219,36 @@ export default {
     //   }
     // },
 
-    isStorageEnabled() {
-      window.localStorage.setItem('test', 'test');
-      try {
-        window.localStorage.getItem('test');
-      }
-      catch {
-        this.storageDisabled = true;
-      }
-    },
+    // saveToCookies() {
+    //   let expDate = new Date;
+    //   expDate.setFullYear(expDate.getFullYear() + 10);
+    //   let content = this.buildTracker();
+
+    //   try {
+    //     var cookies = document.cookie.split(';');
+    //     for (var i = 0; i < cookies.length; i++) {
+    //       document.cookie = cookies[i] + "=; expires="+ new Date(0).toUTCString();
+    //     }
+        
+    //     this.$nextTick(() => {
+    //       document.cookie = 'content=' + JSON.stringify(content) + '; expires=' + expDate.toUTCString() +';';
+    //       this.message = 'Saved successfully.';
+    //     });
+    //   }
+    //   catch {
+    //     this.message = 'Failed to save. Check your browser cookie settings.';
+    //   }
+    // },
   }
 }
 </script>
 
 <style scoped>
-.table-icon {
+.icon {
   height: 1.5em;
   width: 1.5em;
+}
+.clickable-icon {
   cursor: pointer;
 }
 .filter {
@@ -247,6 +277,30 @@ export default {
 td, th {
   text-align: center;
   vertical-align: middle;
+}
+th {
+  cursor: pointer;
+}
+.save-message {
+  display: none;
+  opacity: 0%;
+}
+.fade-in-fade-out {
+  animation: fadeinfadeout 2s;
+}
+@keyframes fadeinfadeout {
+  0% {
+    opacity: 0%;
+  }
+  25% {
+    opacity: 100%;
+  }
+  75% {
+    opacity: 100%;
+  }
+  100% {
+    opacity: 0%;
+  }
 }
 
 @media screen and (orientation: portrait) {

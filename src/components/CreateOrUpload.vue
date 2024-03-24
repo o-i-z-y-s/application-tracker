@@ -52,13 +52,14 @@ export default {
       let applications = [];
       for (let i = 0; i < content.length; i++) {
         let tmp = {};
-        tmp['company'] = content[i][0];
-        tmp['title'] = content[i][1];
-        tmp['payScale'] = content[i][2];
-        tmp['dateApplied'] = content[i][3];
-        tmp['mostRecentContactDate'] = content[i][4];
-        tmp['step'] = content[i][5];
-        tmp['notes'] = content[i][6];
+        tmp['id'] = content[i][0]
+        tmp['company'] = content[i][1];
+        tmp['title'] = content[i][2];
+        tmp['payScale'] = content[i][3];
+        tmp['dateApplied'] = content[i][4];
+        tmp['mostRecentContactDate'] = content[i][5];
+        tmp['step'] = content[i][6];
+        tmp['notes'] = content[i][7];
 
         let application = new Application();
         application.init(tmp);
@@ -81,7 +82,9 @@ export default {
     },
 
     onNew() {
-      this.$emit('created', [new Application()]);
+      let newApp = new Application();
+      newApp.id = '1';
+      this.$emit('created', [newApp]);
     },
 
     dragover(e) {
